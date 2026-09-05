@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>PhishGuard — Security Dashboard</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<header class="header">
+
+    <nav class="nav">
+
+        <a class="logo" href="/">
+
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12 3L5.5 5.7V10.8C5.5 15.2 8.2 19.1 12 20.6C15.8 19.1 18.5 15.2 18.5 10.8V5.7L12 3Z"
+                    />
+                    <path d="M9 12L11 14L15.5 9.5"/>
+                </svg>
+            </div>
+
+            <span>PhishGuard</span>
+
+        </a>
+
+
+        <div class="nav-center">
+
+            <a href="/">
+                Scanner
+            </a>
+
+            <a
+                href="/dashboard"
+                class="active"
+            >
+                Dashboard
+            </a>
+
+        </div>
+
+
+        <div class="online">
+            <i></i>
+            Protection Active
+        </div>
+
+    </nav>
+
+</header>
+
+
+<main class="dashboard-page">
+
+    <div class="dashboard-title">
+
+        <div>
+
+            <span class="dashboard-label">
+                SECURITY OVERVIEW
+            </span>
+
+            <h1>Security Dashboard</h1>
+
+            <p>
+                Monitor URL scans and detected threats.
+            </p>
+
+        </div>
+
+
+        <a href="/" class="new-scan">
+            + New Scan
+        </a>
+
+    </div>
+
+
+    <!-- STAT CARDS -->
+
+    <section class="dashboard-stats">
+
+        <div class="dashboard-stat">
+
+            <div class="stat-icon total">
+                ◈
+            </div>
+
+            <div>
+                <span>Total Scans</span>
+                <strong>{{ stats.total }}</strong>
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-stat">
+
+            <div class="stat-icon safe">
+                ✓
+            </div>
+
+            <div>
+                <span>Likely Safe</span>
+                <strong>{{ stats.safe }}</strong>
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-stat">
+
+            <div class="stat-icon warning">
+                !
+            </div>
+
+            <div>
+                <span>Suspicious</span>
+                <strong>{{ stats.suspicious }}</strong>
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-stat">
+
+            <div class="stat-icon threat">
+                !
+            </div>
+
+            <div>
+                <span>Phishing</span>
+                <strong>{{ stats.phishing }}</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CHART -->
+
+    <section class="dashboard-grid">
+
+        <div class="dashboard-panel chart-panel">
+
+            <div class="panel-heading">
+
+                <div>
+                    <h2>Scan Overview</h2>
+
+                    <p>
+                        Classification distribution
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="chart-container">
+
+                <canvas id="scanChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-panel risk-panel">
+
+            <div class="panel-heading">
+
+                <div>
+                    <h2>Threat 

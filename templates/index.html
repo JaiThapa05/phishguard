@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PhishGuard — URL Security Scanner</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="page-glow glow-left"></div>
+<div class="page-glow glow-right"></div>
+
+
+<!-- NAVIGATION -->
+
+<header class="header">
+
+    <nav class="nav">
+
+        <a class="logo" href="/">
+
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12 3L5.5 5.7V10.8C5.5 15.2 8.2 19.1 12 20.6C15.8 19.1 18.5 15.2 18.5 10.8V5.7L12 3Z"
+                    />
+                    <path d="M9 12L11 14L15.5 9.5"/>
+                </svg>
+            </div>
+
+            <span>PhishGuard</span>
+
+        </a>
+
+
+        <div class="nav-center">
+
+            <a href="/" class="active">
+                Scanner
+            </a>
+
+            <a href="/dashboard">
+                Dashboard
+            </a>
+
+        </div>
+
+
+        <div class="online">
+            <i></i>
+            Protection Active
+        </div>
+
+    </nav>
+
+</header>
+
+
+<main>
+
+<!-- HERO -->
+
+<section class="hero">
+
+    <div class="eyebrow">
+        <span>✦</span>
+        AI-POWERED PHISHING PROTECTION
+    </div>
+
+    <h1>
+        Is this link
+        <span>safe?</span>
+    </h1>
+
+    <p class="hero-text">
+        Detect phishing websites before they become a problem.
+        Analyze any URL using machine learning and threat intelligence.
+    </p>
+
+
+    <!-- SCANNER -->
+
+    <div class="scanner">
+
+        <div class="scanner-top">
+
+            <div class="scanner-title">
+
+                <div class="mini-shield">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M12 3L5.5 5.7V10.8C5.5 15.2 8.2 19.1 12 20.6C15.8 19.1 18.5 15.2 18.5 10.8V5.7L12 3Z"
+                        />
+                    </svg>
+                </div>
+
+                <div>
+                    <h2>Scan a URL</h2>
+                    <p>
+                        Paste the link you want to inspect
+                    </p>
+                </div>
+
+            </div>
+
+
+            <span class="private-badge">
+                ◉ Secure analysis
+            </span>
+
+        </div>
+
+
+        <div class="scan-form">
+
+            <div class="url-input-container">
+
+                <svg
+                    class="url-icon"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        d="M10.5 13.5L13.5 10.5"
+                    />
+                    <path
+                        d="M7.5 15.5L6 17C4.3 18.7 4.3 21.3 6 23C7.7 24.7 10.3 24.7 12 23L15 20C16.7 18.3 16.7 15.7 15 14"
+                    />
+                    <path
+                        d="M17 10C18.7 8.3 18.7 5.7 17 4C15.3 2.3 12.7 2.3 11 4L8 7C6.3 8.7 6.3 11.3 8 13"
+                    />
+                </svg>
+
+                <input
+                    id="urlInput"
+                    type="text"
+                    placeholder="Paste a URL — https://example.com"
+                    
+                >
+
+            </div>
+
+
+            <button id="scanButton" type="button">
+            
+
+
+                <span id="buttonText">
+                    Scan URL
+                </span>
+
+                <svg viewBox="0 0 24 24">
+                    <path d="M5 12H19"/>
+                    <path d="M14 7L19 12L14 17"/>
+                </svg>
+
+            </button>
+
+        </div>
+
+
+        <div class="scanner-bottom">
+
+            <span>
+                <i class="green-dot"></i>
+                ML Analysis
+            </span>
+
+            <span>
+                <i class="green-dot"></i>
+                Heuristic Detection
+            </span>
+
+            <span>
+                <i class="green-dot"></i>
+                Threat Intelligence
+            </span>
+
+            <span class="scan-info">
+                Analysis may take a few seconds
+            </span>
+
+        </div>
+
+
+        <!-- RESULT -->
+
+        <div id="result"></div>
+
+    </div>
+
+
+    <!-- FEATURES -->
+
+    <div class="security-features">
+
+        <div class="security-item">
+
+            <div class="feature-icon blue">
+                <span>⌁</span>
+            </div>
+
+            <div>
+                <h3>AI Detection</h3>
+
+                <p>
+                    Machine learning analyzes suspicious
+                    URL characteristics.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="security-item">
+
+            <div class="feature-icon purple">
+                <span>◎</span>
+            </div>
+
+            <div>
+                <h3>Threat Intelligence</h3>
+
+                <p>
+                    Reputation signals help identify
+                    known malicious links.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="security-item">
+
+            <div class="feature-icon cyan">
+                <span>✓</span>
+            </div>
+
+            <div>
+                <h3>Clear Results</h3>
+
+                <p>
+                    See the risk score and exactly why
+                    a URL was flagged.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<footer>
+
+    <div class="footer-inner">
+
+        <span>
+            PhishGuard
+        </span>
+
+        <p>
+            Built for safer browsing.
+        </p>
+
+        <p class="footer-warning">
+            Automated analysis • Results are not a guarantee of safety
+        </p>
+
+    </div>
+
+</footer>
+
+
+<script>
+console.log("PhishGuard JavaScript loaded");
+
+const button = document.getElementById("scanButton");
+const input = document.getElementById("urlInput");
+const result = document.getElementById("result");
+
+
+/* ===============================
+   ENTER KEY
+================================ */
+
+input.addEventListener("keydown", function (event) {
+
+    if (event.key === "Enter") {
+        event.preventDefault();
+        button.click();
+    }
+
+});
+
+
+/* ===============================
+   SCAN BUTTON
+================================ */
+
+button.onclick = async function () {
+
+    const url = input.value.trim();
+
+    if (!url) {
+
+        result.innerHTML = `
+            <div class="message error">
+                Please enter a URL.
+            </div>
+        `;
+
+        input.focus();
+
+        return;
+    }
+
+
+    button.disabled = true;
+
+    document.getElementById("buttonText").textContent =
+        "Analyzing...";
+
+
+    result.innerHTML = `
+        <div class="scanning">
+
+            <div class="scan-progress">
+                <div></div>
+            </div>
+
+            <p>
+                Analyzing security signals for
+                ${escapeHTML(url)}...
+            </p>
+
+        </div>
+    `;
+
+
+    try {
+
+        const response = await fetch("/check", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                url: url
+            })
+
+        });
+
+
+        const data = await response.json();
+
+        console.log(
+            "Backend response:",
+            data
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Unable to analyze this URL."
+            );
+
+        }
+
+
+        renderScanResult(data);
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Scan error:",
+            error
+        );
+
+
+        result.innerHTML = `
+            <div class="message error">
+                ${escapeHTML(error.message)}
+            </div>
+        `;
+
+    }
+
+    finally {
+
+        button.disabled = false;
+
+        document.getElementById(
+            "buttonText"
+        ).textContent = "Scan URL";
+
+    }
+
+};
+
+
+/* ===============================
+   RENDER RESULT
+================================ */
+
+function renderScanResult(data) {
+
+    let statusClass = "safe";
+    let statusIcon = "✓";
+
+
+    if (data.status === "Likely Phishing") {
+
+        statusClass = "danger";
+        statusIcon = "!";
+
+    }
+
+    else if (data.status === "Suspicious") {
+
+        statusClass = "warning";
+        statusIcon = "!";
+
+    }
+
+
+    /* ===============================
+       ML SCORE
+    ================================ */
+
+    let mlScore = "N/A";
+
+    if (
+        data.ml_probability !== null &&
+        data.ml_probability !== undefined
+    ) {
+
+        mlScore =
+            (
+                data.ml_probability * 100
+            ).toFixed(2) + "%";
+
+    }
+
+
+    /* ===============================
+       DOMAIN AGE
+    ================================ */
+
+    let domainAge = "Unknown";
+    let registrationHTML = "";
+
+
+    if (data.domain_reputation) {
+
+        if (
+            data.domain_reputation.age_text
+        ) {
+
+            domainAge = escapeHTML(
+                data.domain_reputation.age_text
+            );
+
+        }
+
+
+        if (
+            data.domain_reputation.created
+        ) {
+
+            registrationHTML = `
+                <small class="domain-created">
+                    Registered:
+                    ${escapeHTML(
+                        data.domain_reputation.created
+                    )}
+                </small>
+            `;
+
+        }
+
+    }
+
+
+    /* ===============================
+       REASONS
+    ================================ */
+
+    const reasons =
+        (data.reasons || [])
+        .map(function (reason) {
+
+            return `
+                <li>
+                    <span>•</span>
+                    ${escapeHTML(reason)}
+                </li>
+            `;
+
+        })
+        .join("");
+
+
+    /* ===============================
+       VIRUSTOTAL
+    ================================ */
+
+    let vtHTML = `
+        <div class="vt-empty">
+            Threat intelligence unavailable
+        </div>
+    `;
+
+
+    if (
+        data.virustotal &&
+        data.virustotal.available === true &&
+        data.virustotal.found === true
+    ) {
+
+        const malicious =
+            data.virustotal.malicious ?? 0;
+
+        const suspicious =
+            data.virustotal.suspicious ?? 0;
+
+        const harmless =
+            data.virustotal.harmless ?? 0;
+
+        const undetected =
+            data.virustotal.undetected ?? 0;
+
+
+        vtHTML = `
+
+            <div class="threat-intel">
+
+                <div class="intel-header">
+
+                    <div>
+
+                        <span class="intel-label">
+                            THREAT INTELLIGENCE
+                        </span>
+
+                        <h3>
+                            VirusTotal Reputation
+                        </h3>
+
+                    </div>
+
+
+                    <span class="intel-live">
+                        LIVE
+                    </span>
+
+                </div>
+
+
+                <div class="intel-grid">
+
+                    <div class="intel-stat malicious">
+
+                        <strong>
+                            ${malicious}
+                        </strong>
+
+                        <span>
+                            Malicious
+                        </span>
+
+                    </div>
+
+
+                    <div class="intel-stat suspicious">
+
+                        <strong>
+                            ${suspicious}
+                        </strong>
+
+                        <span>
+                            Suspicious
+                        </span>
+
+                    </div>
+
+
+                    <div class="intel-stat harmless">
+
+                        <strong>
+                            ${harmless}
+                        </strong>
+
+                        <span>
+                            Harmless
+                        </span>
+
+                    </div>
+
+
+                    <div class="intel-stat undetected">
+
+                        <strong>
+                            ${undetected}
+                        </strong>
+
+                        <span>
+                            Undetected
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+    }
+
+    else if (
+        data.virustotal &&
+        data.virustotal.available === true &&
+        data.virustotal.found === false
+    ) {
+
+        vtHTML = `
+            <div class="vt-empty">
+
+                <strong>
+                    No reputation report
+                </strong>
+
+                <p>
+                    No existing VirusTotal report
+                    was found for this URL.
+                </p>
+
+            </div>
+        `;
+
+    }
+
+
+    /* ===============================
+       FINAL HTML
+    ================================ */
+
+    result.innerHTML = `
+
+        <div class="scan-result ${statusClass}">
+
+
+            <!-- RESULT HEADER -->
+
+            <div class="result-heading">
+
+
+                <div class="result-status">
+
+                    <div class="result-icon">
+                        ${statusIcon}
+                    </div>
+
+
+                    <div>
+
+                        <span class="result-label">
+                            SCAN RESULT
+                        </span>
+
+
+                        <h2>
+                            ${escapeHTML(
+                                data.status
+                            )}
+                        </h2>
+
+
+                        <p>
+                            ${escapeHTML(
+                                data.url
+                            )}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="risk-score">
+
+                    <div>
+
+                        <strong>
+                            ${data.score}
+                        </strong>
+
+                        <span>
+                            /100
+                        </span>
+
+                    </div>
+
+
+                    <small>
+                        RISK SCORE
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- SECURITY METRICS -->
+
+            <div class="metrics">
+
+
+                <div>
+
+                    <span>
+                        ML Risk Signal
+                    </span>
+
+                    <strong>
+                        ${mlScore}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Rule Score
+                    </span>
+
+                    <strong>
+                        ${data.rule_score}/100
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Domain Score
+                    </span>
+
+                    <strong>
+                        ${data.domain_score ?? 0}/100
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Domain Age
+                    </span>
+
+                    <strong>
+                        ${domainAge}
+                    </strong>
+
+                    ${registrationHTML}
+
+                </div>
+
+            </div>
+
+
+            <!-- DETAILS -->
+
+            <div class="analysis-panels">
+
+
+                <div class="analysis-panel">
+
+                    <h4>
+                        Detection Details
+                    </h4>
+
+
+                    <ul>
+                        ${
+                            reasons ||
+                            `
+                                <li>
+                                    No major phishing
+                                    indicators detected.
+                                </li>
+                            `
+                        }
+                    </ul>
+
+                </div>
+
+
+                <div class="analysis-panel">
+
+                    ${vtHTML}
+
+                </div>
+
+
+            </div>
+
+
+            <div class="result-disclaimer">
+
+                Automated security assessment.
+                A low-risk result does not guarantee
+                that a website is safe.
+
+            </div>
+
+
+        </div>
+    `;
+
+}
+
+
+/* ===============================
+   ESCAPE USER CONTENT
+================================ */
+
+function escapeHTML(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        String(value ?? "");
+
+    return div.innerHTML;
+
+}
+</script>

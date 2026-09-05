@@ -1,0 +1,41 @@
+# Python virtual environment
+venv/
+.venv/
+
+# Secrets / API keys
+.env
+.env.*
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Pytest
+.pytest_cache/
+
+# Local database
+scans.db
+*.db-journal
+
+# Large training datasets
+dataset/
+
+# Old / unused ML models
+model.pkl
+model_old.pkl
+model_broken.pkl
+url_model.pkl
+
+# Keep active V3 model
+!url_model_v3.pkl
+
+# VS Code local settings
+.vscode/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
