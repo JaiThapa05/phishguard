@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Sign In — PhishGuard
+    </title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body class="auth-body">
+
+    <a
+    href="{{ url_for('home') }}"
+    class="auth-back-button"
+>
+    <svg viewBox="0 0 24 24">
+        <path d="M19 12H5"/>
+        <path d="M10 17L5 12L10 7"/>
+    </svg>
+
+    <span>
+        Back 
+    </span>
+</a>
+
+
+<div class="auth-page">
+
+
+    <a
+        href="/"
+        class="auth-logo"
+    >
+
+        <div class="logo-icon">
+
+            <svg viewBox="0 0 24 24">
+
+                <path
+                    d="M12 3L5.5 5.7V10.8C5.5 15.2 8.2 19.1 12 20.6C15.8 19.1 18.5 15.2 18.5 10.8V5.7L12 3Z"
+                />
+
+                <path
+                    d="M9 12L11 14L15.5 9.5"
+                />
+
+            </svg>
+
+        </div>
+
+        PhishGuard
+
+    </a>
+
+
+    <div class="auth-card">
+
+
+        <div class="auth-heading">
+
+            <div class="auth-shield">
+                ◇
+            </div>
+
+            <h1>
+                Welcome back
+            </h1>
+
+            <p>
+                Sign in to access your security dashboard
+                and saved scans.
+            </p>
+
+        </div>
+
+
+        {% with messages =
+            get_flashed_messages(
+                with_categories=true
+            )
+        %}
+
+            {% for category, message in messages %}
+
+                <div class="auth-alert {{ category }}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endwith %}
+
+
+        <form
+            method="POST"
+            class="auth-form"
+        >
+
+
+            <div class="form-group">
+
+                <label>
+                    Email address
+                </label>
+
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    required
+                    autocomplete="email"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+                    autocomplete="current-password"
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="auth-button"
+            >
+                Sign In
+                <span>→</span>
+            </button>
+
+
+        </form>
+
+
+        <div class="auth-footer">
+
+            Don't have an account?
+
+            <a href="/register">
+                Create account
+            </a>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
