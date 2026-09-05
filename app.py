@@ -1,3 +1,6 @@
+import os
+from dotenv import load_dotenv
+from models import db
 from flask import Flask, render_template, request, jsonify
 from detector import analyze_url
 from virustotal import check_virustotal
@@ -8,6 +11,60 @@ from url_validator import validate_url
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 app = Flask(__name__)
+
+app.config["SECRET_KEY"] = os.getenv(
+    "SECRET_KEY",
+    "development-only-secret"
+)
+
+
+database_url = os.getenv(
+    "DATABASE_URL"
+)
+
+
+if database_url:
+
+    # Some platforms may provide postgres://
+    # SQLAlchemy expects postgresql://
+    if database_url.startswith(
+        "postgres://"
+    ):
+
+        database_url = (
+            database_url.replace(
+                "postgres://",
+                "postgresql://",
+                1
+            )
+        )
+
+    app.config[
+        "SQLALCHEMY_DATABASE_URI"
+    ] = database_url
+
+else:
+
+    app.config[
+        "SQLALCHEMY_DATABASE_URI"
+    ] = "sqlite:///phishguard.db"
+
+
+app.config[
+    "SQLALCHEMY_TRACK_MODIFICATIONS"
+] = False
+
+
+db.init_app(app)
+
+
+with app.app_context():
+
+    db.create_all()
+
+    print(
+        "Authentication database initialized!"
+    )
 
 limiter = Limiter(
     key_func=get_remote_address,
