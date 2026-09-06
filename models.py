@@ -36,6 +36,12 @@ class User(UserMixin, db.Model):
         db.String(255),
         nullable=False
     )
+    # Email verified hai ya nahi
+    is_verified = db.Column(
+        db.Boolean,
+        default=False,
+        nullable=False
+    )
 
     created_at = db.Column(
         db.DateTime(timezone=True),

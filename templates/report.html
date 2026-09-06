@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Security Report — PhishGuard
+    </title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<header class="header">
+
+    <nav class="nav">
+
+        <a
+            href="/"
+            class="logo"
+        >
+
+            <div class="logo-icon">
+
+                <svg viewBox="0 0 24 24">
+
+                    <path
+                        d="M12 3L5.5 5.7V10.8C5.5 15.2 8.2 19.1 12 20.6C15.8 19.1 18.5 15.2 18.5 10.8V5.7L12 3Z"
+                    />
+
+                    <path
+                        d="M9 12L11 14L15.5 9.5"
+                    />
+
+                </svg>
+
+            </div>
+
+            <span>
+                PhishGuard
+            </span>
+
+        </a>
+
+
+        <div class="nav-center">
+
+            <a href="/">
+                Scanner
+            </a>
+
+            <a href="/dashboard">
+                Dashboard
+            </a>
+
+        </div>
+
+
+        <div class="nav-account">
+
+            <span class="user-name">
+                {{ current_user.name }}
+            </span>
+
+            <a
+                href="/logout"
+                class="logout-link"
+            >
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+</header>
+
+
+<main class="report-page">
+
+
+    <!-- BACK -->
+
+    <a
+        href="/dashboard"
+        class="report-back"
+    >
+        ← Back to Dashboard
+    </a>
+
+
+    <!-- HEADER -->
+
+    <section class="report-header">
+
+        <div>
+
+            <span class="report-label">
+                SECURITY ANALYSIS
+            </span>
+
+            <h1>
+                Website Security Report
+            </h1>
+
+            <p class="report-url">
+                {{ scan.url }}
+            </p>
+
+        </div>
+
+
+        {% if scan.status == "Low Risk" %}
+
+            <div class="report-verdict verdict-safe">
+
+                <span>
+                    ✓
+                </span>
+
+                <div>
+                    <small>
+                        VERDICT
+                    </small>
+
+                    <strong>
+                        Low Risk
+                    </strong>
+                </div>
+
+            </div>
+
+
+        {% elif scan.status == "Suspicious" %}
+
+            <div class="report-verdict verdict-warning">
+
+                <span>
+                    !
+                </span>
+
+                <div>
+                    <small>
+                        VERDICT
+                    </small>
+
+                    <strong>
+                        Suspicious
+                    </strong>
+                </div>
+
+            </div>
+
+
+        {% else %}
+
+            <div class="report-verdict verdict-danger">
+
+                <span>
+                    !
+                </span>
+
+                <div>
+                    <small>
+                        VERDICT
+                    </small>
+
+                    <strong>
+                        Likely Phishing
+                    </strong>
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- SCORE CARDS -->
+
+    <section class="report-scores">
+
+
+        <div class="report-score-card">
+
+            <span>
+                Overall Risk
+            </span>
+
+            <strong>
+                {{ scan.score }}
+                <small>/100</small>
+            </strong>
+
+        </div>
+
+
+        <div class="report-score-card">
+
+            <span>
+                ML Risk Signal
+            </span>
+
+            <strong>
+
+                {% if scan.ml_probability is not none %}
+
+                    {{
+                        "%.2f"|format(
+                            scan.ml_probability * 100
+                        )
+                    }}%
+
+                {% else %}
+
+                    N/A
+
+                {% endif %}
+
+            </strong>
+
+        </div>
+
+
+        <div class="report-score-card">
+
+            <span>
+                Rule Score
+            </span>
+
+            <strong>
+                {{ scan.rule_score }}
+                <small>/100</small>
+            </strong>
+
+        </div>
+
+
+        <div class="report-score-card">
+
+            <span>
+                Domain Score
+            </span>
+
+            <strong>
+                {{ scan.domain_score }}
+                <small>/100</small>
+            </strong>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- DOMAIN -->
+
+    <section class="report-panel">
+
+        <div class="report-panel-title">
+
+            <div>
+                <span class="panel-number">
+                    01
+                </span>
+
+                <div>
+                    <h2>
+                        Domain Information
+                    </h2>
+
+                    <p>
+                        Registration and domain intelligence
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="info-grid">
+
+
+            <div class="info-item">
+
+                <span>
+                    Registered Domain
+                </span>
+
+                <strong>
+                    {{ scan.registered_domain or "Unknown" }}
+                </strong>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <span>
+                    Registration Date
+                </span>
+
+                <strong>
+                    {{ scan.domain_created or "Unknown" }}
+                </strong>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <span>
+                    Domain Age
+                </span>
+
+                <strong>
+
+                    {% if scan.domain_age_days is not none %}
+
+                        {% if scan.domain_age_days < 30 %}
+
+                            {{ scan.domain_age_days }}
+                            days
+
+                        {% elif scan.domain_age_days < 365 %}
+
+                            {{
+                                (scan.domain_age_days / 30)
+                                | int
+                            }}
+                            months
+
+                        {% else %}
+
+                            {{
+                                (scan.domain_age_days / 365.25)
+                                | int
+                            }}
+                            years
+
+                        {% endif %}
+
+                    {% else %}
+
+                        Unknown
+
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- VIRUSTOTAL -->
+
+    <section class="report-panel">
+
+        <div class="report-panel-title">
+
+            <div>
+
+                <span class="panel-number">
+                    02
+                </span>
+
+                <div>
+
+                    <h2>
+                        Threat Intelligence
+                    </h2>
+
+                    <p>
+                        VirusTotal reputation analysis
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="report-vt-grid">
+
+
+            <div class="report-vt malicious">
+
+                <strong>
+                    {{ scan.vt_malicious }}
+                </strong>
+
+                <span>
+                    Malicious
+                </span>
+
+            </div>
+
+
+            <div class="report-vt suspicious">
+
+                <strong>
+                    {{ scan.vt_suspicious }}
+                </strong>
+
+                <span>
+                    Suspicious
+                </span>
+
+            </div>
+
+
+            <div class="report-vt harmless">
+
+                <strong>
+                    {{ scan.vt_harmless }}
+                </strong>
+
+                <span>
+                    Harmless
+                </span>
+
+            </div>
+
+
+            <div class="report-vt undetected">
+
+                <strong>
+                    {{ scan.vt_undetected }}
+                </strong>
+
+                <span>
+                    Undetected
+                </span>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- VERDICT EXPLANATION -->
+
+    <section class="report-panel">
+
+        <div class="report-panel-title">
+
+            <div>
+
+                <span class="panel-number">
+                    03
+                </span>
+
+                <div>
+
+                    <h2>
+                        Security Recommendation
+                    </h2>
+
+                    <p>
+                        Recommended action based on analysis
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {% if scan.status == "Low Risk" %}
+
+            <div class="recommendation recommendation-safe">
+
+                <div class="recommendation-icon">
+                    ✓
+                </div>
+
+                <div>
+
+                    <h3>
+                        No significant phishing indicators detected
+                    </h3>
+
+                    <p>
+                        Automated signals currently indicate a
+                        relatively low risk. This does not guarantee
+                        that the website is safe. Verify sensitive
+                        requests independently.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        {% elif scan.status == "Suspicious" %}
+
+            <div class="recommendation recommendation-warning">
+
+                <div class="recommendation-icon">
+                    !
+                </div>
+
+                <div>
+
+                    <h3>
+                        Proceed with caution
+                    </h3>
+
+                    <p>
+                        Some suspicious indicators were detected.
+                        Avoid entering passwords, payment information,
+                        or other sensitive data until the site has
+                        been independently verified.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        {% else %}
+
+            <div class="recommendation recommendation-danger">
+
+                <div class="recommendation-icon">
+                    !
+                </div>
+
+                <div>
+
+                    <h3>
+                        Avoid opening or interacting with this URL
+                    </h3>
+
+                    <p>
+                        Multiple phishing indicators were detected.
+                        Do not enter passwords, financial information,
+                        or download files from this URL.
+                    </p>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <div class="report-footer">
+
+        <span>
+            Report ID #{{ scan.id }}
+        </span>
+
+        <span>
+            Scanned:
+            {{ scan.created_at }}
+        </span>
+
+    </div>
+
+
+</main>
+
+</body>
+
+</html>

@@ -9,6 +9,7 @@ from domain_reputation import check_domain_age
 from url_validator import validate_url
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_migrate import Migrate
 from flask import (
     Flask,
     render_template,
@@ -16,7 +17,8 @@ from flask import (
     jsonify,
     redirect,
     url_for,
-    flash
+    flash,
+    abort
 )
 
 from flask_login import (
@@ -30,6 +32,26 @@ from flask_login import current_user
 from models import db, User, Scan
 app = Flask(__name__)
 
+@app.route("/report/<int:scan_id>")
+@login_required
+def report(scan_id):
+
+    scan = db.session.get(
+        Scan,
+        scan_id
+    )
+
+    if scan is None:
+        abort(404)
+
+    # User can access only their own report
+    if scan.user_id != current_user.id:
+        abort(403)
+
+    return render_template(
+        "report.html",
+        scan=scan
+    )
 app.config["SECRET_KEY"] = os.getenv(
     "SECRET_KEY",
     "development-only-secret"
@@ -74,6 +96,8 @@ app.config[
 
 
 db.init_app(app)
+
+migrate = Migrate(app, db)
 
 
 login_manager = LoginManager()

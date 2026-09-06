@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
 
@@ -26,45 +27,70 @@
         rel="stylesheet"
     >
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='style.css') }}"
     >
 
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js"
+        defer
+    ></script>
 </head>
 
+
 <body>
+
+
+<!-- ========================================
+     NAVIGATION
+========================================= -->
 
 <header class="header">
 
     <nav class="nav">
 
-        <a class="logo" href="/">
+
+        <!-- LOGO -->
+
+        <a
+            href="{{ url_for('home') }}"
+            class="logo"
+        >
 
             <div class="logo-icon">
+
                 <svg viewBox="0 0 24 24">
+
                     <path
                         d="M12 3L5.5 5.7V10.8C5.5 15.2 8.2 19.1 12 20.6C15.8 19.1 18.5 15.2 18.5 10.8V5.7L12 3Z"
                     />
-                    <path d="M9 12L11 14L15.5 9.5"/>
+
+                    <path
+                        d="M9 12L11 14L15.5 9.5"
+                    />
+
                 </svg>
+
             </div>
 
-            <span>PhishGuard</span>
+            <span>
+                PhishGuard
+            </span>
 
         </a>
 
 
+        <!-- CENTER NAV -->
+
         <div class="nav-center">
 
-            <a href="/">
+            <a href="{{ url_for('home') }}">
                 Scanner
             </a>
 
             <a
-                href="/dashboard"
+                href="{{ url_for('dashboard') }}"
                 class="active"
             >
                 Dashboard
@@ -73,19 +99,48 @@
         </div>
 
 
-        <div class="online">
-            <i></i>
-            Protection Active
+        <!-- USER -->
+
+        <div class="nav-account">
+
+            <div class="logged-user">
+
+                <span class="user-avatar">
+                    {{ current_user.name[0] | upper }}
+                </span>
+
+                <span class="user-name">
+                    {{ current_user.name }}
+                </span>
+
+            </div>
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="logout-link"
+            >
+                Logout
+            </a>
+
         </div>
+
 
     </nav>
 
 </header>
 
 
+
+<!-- ========================================
+     MAIN DASHBOARD
+========================================= -->
+
 <main class="dashboard-page">
 
-    <div class="dashboard-title">
+
+    <!-- TITLE -->
+
+    <section class="dashboard-title">
 
         <div>
 
@@ -94,30 +149,34 @@
             </span>
 
             <h1>
-    Welcome back, {{ current_user.name }}
-</h1>
-
-<p>
-    Monitor your URL scans and security reports.
-</p>
+                Welcome back, {{ current_user.name }}
+            </h1>
 
             <p>
-                Monitor URL scans and detected threats.
+                Monitor your scans, security reports
+                and detected threats.
             </p>
 
         </div>
 
 
-        <a href="/" class="new-scan">
+        <a
+            href="{{ url_for('home') }}"
+            class="new-scan"
+        >
             + New Scan
         </a>
 
-    </div>
+    </section>
 
 
-    <!-- STAT CARDS -->
+
+    <!-- ========================================
+         STATISTICS
+    ========================================= -->
 
     <section class="dashboard-stats">
+
 
         <div class="dashboard-stat">
 
@@ -126,11 +185,19 @@
             </div>
 
             <div>
-                <span>Total Scans</span>
-                <strong>{{ stats.total }}</strong>
+
+                <span>
+                    Total Scans
+                </span>
+
+                <strong>
+                    {{ stats.total }}
+                </strong>
+
             </div>
 
         </div>
+
 
 
         <div class="dashboard-stat">
@@ -140,11 +207,19 @@
             </div>
 
             <div>
-                <span>Likely Safe</span>
-                <strong>{{ stats.safe }}</strong>
+
+                <span>
+                    Low Risk
+                </span>
+
+                <strong>
+                    {{ stats.safe }}
+                </strong>
+
             </div>
 
         </div>
+
 
 
         <div class="dashboard-stat">
@@ -154,11 +229,19 @@
             </div>
 
             <div>
-                <span>Suspicious</span>
-                <strong>{{ stats.suspicious }}</strong>
+
+                <span>
+                    Suspicious
+                </span>
+
+                <strong>
+                    {{ stats.suspicious }}
+                </strong>
+
             </div>
 
         </div>
+
 
 
         <div class="dashboard-stat">
@@ -168,29 +251,48 @@
             </div>
 
             <div>
-                <span>Phishing</span>
-                <strong>{{ stats.phishing }}</strong>
+
+                <span>
+                    Phishing
+                </span>
+
+                <strong>
+                    {{ stats.phishing }}
+                </strong>
+
             </div>
 
         </div>
 
+
     </section>
 
 
-    <!-- CHART -->
+
+    <!-- ========================================
+         CHART / SUMMARY
+    ========================================= -->
 
     <section class="dashboard-grid">
+
+
+        <!-- CHART -->
 
         <div class="dashboard-panel chart-panel">
 
             <div class="panel-heading">
 
                 <div>
-                    <h2>Scan Overview</h2>
+
+                    <h2>
+                        Scan Overview
+                    </h2>
 
                     <p>
                         Classification distribution
+                        of your analyzed URLs.
                     </p>
+
                 </div>
 
             </div>
@@ -205,9 +307,646 @@
         </div>
 
 
+
+        <!-- SUMMARY -->
+
         <div class="dashboard-panel risk-panel">
 
             <div class="panel-heading">
 
                 <div>
-                    <h2>Threat 
+
+                    <h2>
+                        Threat Summary
+                    </h2>
+
+                    <p>
+                        Current security statistics
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="risk-summary">
+
+
+                <div>
+
+                    <span>
+                        Low Risk URLs
+                    </span>
+
+                    <strong class="summary-safe">
+                        {{ stats.safe }}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Requires Caution
+                    </span>
+
+                    <strong class="summary-warning">
+                        {{ stats.suspicious }}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Potential Threats
+                    </span>
+
+                    <strong class="summary-danger">
+                        {{ stats.phishing }}
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ========================================
+         HISTORY
+    ========================================= -->
+
+    <section class="dashboard-panel history-panel">
+
+
+        <div class="history-header">
+
+
+            <div>
+
+                <h2>
+                    Recent Scans
+                </h2>
+
+                <p>
+                    Your latest saved URL security scans.
+                </p>
+
+            </div>
+
+
+            <div class="search-history">
+
+                <span>
+                    ⌕
+                </span>
+
+                <input
+                    id="historySearch"
+                    type="text"
+                    placeholder="Search scans..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- TABLE -->
+
+        <div class="table-wrapper">
+
+
+            <table id="scanTable">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            URL
+                        </th>
+
+                        <th>
+                            STATUS
+                        </th>
+
+                        <th>
+                            RISK
+                        </th>
+
+                        <th>
+                            ML SCORE
+                        </th>
+
+                        <th>
+                            VT FLAGS
+                        </th>
+
+                        <th>
+                            DATE
+                        </th>
+
+                        <th>
+                            REPORT
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                {% for scan in scans %}
+
+
+                    <tr>
+
+
+                        <!-- URL -->
+
+                        <td>
+
+                            <div class="table-url">
+
+                                <div class="url-favicon">
+                                    ↗
+                                </div>
+
+                                <span
+                                    title="{{ scan.url }}"
+                                >
+                                    {{ scan.url }}
+                                </span>
+
+                            </div>
+
+                        </td>
+
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+
+                            {% if scan.status == "Low Risk" %}
+
+                                <span
+                                    class="status-pill pill-safe"
+                                >
+
+                                    <i></i>
+
+                                    Low Risk
+
+                                </span>
+
+
+                            {% elif scan.status == "Suspicious" %}
+
+                                <span
+                                    class="status-pill pill-warning"
+                                >
+
+                                    <i></i>
+
+                                    Suspicious
+
+                                </span>
+
+
+                            {% else %}
+
+                                <span
+                                    class="status-pill pill-danger"
+                                >
+
+                                    <i></i>
+
+                                    Phishing
+
+                                </span>
+
+                            {% endif %}
+
+
+                        </td>
+
+
+
+                        <!-- RISK -->
+
+                        <td>
+
+                            <div class="risk-number">
+
+                                <span>
+                                    {{ scan.score }}
+                                </span>
+
+                                <small>
+                                    /100
+                                </small>
+
+                            </div>
+
+                        </td>
+
+
+
+                        <!-- ML -->
+
+                        <td>
+
+                            {% if scan.ml_probability is not none %}
+
+                                {{
+                                    "%.2f"|format(
+                                        scan.ml_probability * 100
+                                    )
+                                }}%
+
+                            {% else %}
+
+                                N/A
+
+                            {% endif %}
+
+                        </td>
+
+
+
+                        <!-- VT -->
+
+                        <td>
+
+                            {% if scan.vt_malicious > 0 %}
+
+                                <span class="vt-danger">
+                                    {{ scan.vt_malicious }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="vt-zero">
+                                    0
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+
+                        <!-- DATE -->
+
+                        <td class="date-cell">
+
+                            {% if scan.created_at %}
+
+                                {{
+                                    scan.created_at.strftime(
+                                        "%d %b %Y %H:%M"
+                                    )
+                                }}
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </td>
+
+
+
+                        <!-- REPORT -->
+
+                        <td>
+
+                            <a
+                                href="{{ url_for('report', scan_id=scan.id) }}"
+                                class="view-report"
+                            >
+
+                                View Report
+
+                                <span>
+                                    →
+                                </span>
+
+                            </a>
+
+                        </td>
+
+
+                    </tr>
+
+
+                {% else %}
+
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="empty-table"
+                        >
+
+                            No saved scans yet.
+
+                            <a
+                                href="{{ url_for('home') }}"
+                            >
+                                Scan your first URL
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+
+                {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ========================================
+     PASS JINJA DATA TO JAVASCRIPT
+========================================= -->
+
+<div
+    id="dashboardData"
+
+    data-safe="{{ stats.safe }}"
+
+    data-suspicious="{{ stats.suspicious }}"
+
+    data-phishing="{{ stats.phishing }}"
+
+    hidden
+></div>
+
+
+
+<!-- ========================================
+     JAVASCRIPT
+========================================= -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        /* ==============================
+           DASHBOARD DATA
+        =============================== */
+
+        const dashboardData =
+            document.getElementById(
+                "dashboardData"
+            );
+
+
+        const safeCount =
+            Number(
+                dashboardData.dataset.safe || 0
+            );
+
+
+        const suspiciousCount =
+            Number(
+                dashboardData.dataset.suspicious || 0
+            );
+
+
+        const phishingCount =
+            Number(
+                dashboardData.dataset.phishing || 0
+            );
+
+
+        /* ==============================
+           CHART
+        =============================== */
+
+        const chartElement =
+            document.getElementById(
+                "scanChart"
+            );
+
+
+        if (
+            chartElement &&
+            typeof Chart !== "undefined"
+        ) {
+
+            const ctx =
+                chartElement.getContext(
+                    "2d"
+                );
+
+
+            new Chart(
+                ctx,
+                {
+
+                    type: "doughnut",
+
+
+                    data: {
+
+                        labels: [
+                            "Low Risk",
+                            "Suspicious",
+                            "Phishing"
+                        ],
+
+
+                        datasets: [
+
+                            {
+
+                                data: [
+
+                                    safeCount,
+
+                                    suspiciousCount,
+
+                                    phishingCount
+
+                                ],
+
+
+                                backgroundColor: [
+
+                                    "#26d59b",
+
+                                    "#ffb44c",
+
+                                    "#ff6075"
+
+                                ],
+
+
+                                borderWidth: 0,
+
+
+                                hoverOffset: 6
+
+                            }
+
+                        ]
+
+                    },
+
+
+                    options: {
+
+                        responsive: true,
+
+                        maintainAspectRatio: false,
+
+                        cutout: "72%",
+
+
+                        plugins: {
+
+                            legend: {
+
+                                position:
+                                    "bottom",
+
+
+                                labels: {
+
+                                    color:
+                                        "#9aa6b8",
+
+                                    padding:
+                                        20,
+
+                                    usePointStyle:
+                                        true,
+
+                                    pointStyle:
+                                        "circle",
+
+                                    font: {
+
+                                        size: 11
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* ==============================
+           SEARCH
+        =============================== */
+
+        const searchInput =
+            document.getElementById(
+                "historySearch"
+            );
+
+
+        if (searchInput) {
+
+            searchInput.addEventListener(
+                "input",
+                function () {
+
+
+                    const searchValue =
+                        this.value
+                        .trim()
+                        .toLowerCase();
+
+
+                    const rows =
+                        document.querySelectorAll(
+                            "#scanTable tbody tr"
+                        );
+
+
+                    rows.forEach(
+                        function (row) {
+
+
+                            const rowText =
+                                row.innerText
+                                .toLowerCase();
+
+
+                            row.style.display =
+
+                                rowText.includes(
+                                    searchValue
+                                )
+
+                                ? ""
+
+                                : "none";
+
+                        }
+                    );
+
+                }
+            );
+
+        }
+
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>
