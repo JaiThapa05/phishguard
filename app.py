@@ -10,6 +10,11 @@ from url_validator import validate_url
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_migrate import Migrate
+from authlib.integrations.flask_client import OAuth
+from email_service import (
+    send_verification_email,
+    verify_token
+)
 from flask import (
     Flask,
     render_template,
@@ -31,6 +36,201 @@ from flask_login import (
 from flask_login import current_user
 from models import db, User, Scan
 app = Flask(__name__)
+
+oauth = OAuth(app)
+
+google = oauth.register(
+    name="google",
+
+    client_id=os.getenv(
+        "GOOGLE_CLIENT_ID"
+    ),
+
+    client_secret=os.getenv(
+        "GOOGLE_CLIENT_SECRET"
+    ),
+
+    server_metadata_url=(
+        "https://accounts.google.com/"
+        ".well-known/openid-configuration"
+    ),
+
+    client_kwargs={
+        "scope": "openid email profile"
+    }
+)
+
+@app.route("/login/google")
+def google_login():
+
+    redirect_uri = url_for(
+        "google_callback",
+        _external=True
+    )
+
+    return google.authorize_redirect(
+        redirect_uri
+    )
+
+
+@app.route("/auth/google/callback")
+def google_callback():
+
+    try:
+
+        token = google.authorize_access_token()
+
+        user_info = token.get(
+            "userinfo"
+        )
+
+        if not user_info:
+
+            user_info = google.userinfo()
+
+
+        email = (
+            user_info.get(
+                "email",
+                ""
+            )
+            .strip()
+            .lower()
+        )
+
+
+        google_id = str(
+            user_info.get(
+                "sub",
+                ""
+            )
+        )
+
+
+        name = (
+            user_info.get("name")
+            or email.split("@")[0]
+        )
+
+
+        verified = user_info.get(
+            "email_verified",
+            False
+        )
+
+
+        if not verified:
+
+            flash(
+                "Google could not verify this email.",
+                "error"
+            )
+
+            return redirect(
+                url_for("login")
+            )
+
+
+        # If you specifically want Gmail only
+        if not email.endswith("@gmail.com"):
+
+            flash(
+                "Please use a Gmail account.",
+                "error"
+            )
+
+            return redirect(
+                url_for("login")
+            )
+
+
+        if not google_id:
+
+            flash(
+                "Google authentication failed.",
+                "error"
+            )
+
+            return redirect(
+                url_for("login")
+            )
+
+
+        # First search by Google ID
+
+        user = User.query.filter_by(
+            google_id=google_id
+        ).first()
+
+
+        # Existing account?
+        if user is None:
+
+            user = User.query.filter_by(
+                email=email
+            ).first()
+
+
+            if user:
+
+                user.google_id = google_id
+                user.is_verified = True
+
+
+            else:
+
+                import secrets
+
+                user = User(
+                    name=name,
+                    email=email,
+                    google_id=google_id,
+                    is_verified=True
+                )
+
+                # Existing DB currently requires
+                # password_hash, so give OAuth
+                # account an unusable random password.
+
+                user.set_password(
+                    secrets.token_urlsafe(48)
+                )
+
+                db.session.add(
+                    user
+                )
+
+
+            db.session.commit()
+
+
+        login_user(
+            user,
+            remember=True
+        )
+
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+
+    except Exception as e:
+
+        print(
+            "Google OAuth error:",
+            e
+        )
+
+        flash(
+            "Google sign-in failed. Please try again.",
+            "error"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
 
 @app.route("/report/<int:scan_id>")
 @login_required
@@ -125,13 +325,14 @@ def load_user(user_id):
     "/register",
     methods=["GET", "POST"]
 )
-
 def register():
 
     if current_user.is_authenticated:
+
         return redirect(
-            url_for("home")
+            url_for("dashboard")
         )
+
 
     if request.method == "POST":
 
@@ -148,18 +349,166 @@ def register():
             .lower()
         )
 
-        password = (
-            request.form
-            .get("password", "")
+        password = request.form.get(
+            "password",
+            ""
         )
 
-        confirm_password = (
-            request.form
-            .get("confirm_password", "")
+        confirm = request.form.get(
+            "confirm_password",
+            ""
         )
 
 
-        if not name or not email or not password:
+        if not name or not email:
+
+            flash(
+                "Please complete all fields.",
+                "error"
+            )
+
+            return render_template(
+                "register.html"
+            )
+
+
+        if len(password) < 8:
+
+            flash(
+                "Password must contain at least 8 characters.",
+                "error"
+            )
+
+            return render_template(
+                "register.html"
+            )
+
+
+        if password != confirm:
+
+            flash(
+                "Passwords do not match.",
+                "error"
+            )
+
+            return render_template(
+                "register.html"
+            )
+
+
+        existing = User.query.filter_by(
+            email=email
+        ).first()
+
+
+        if existing:
+
+            flash(
+                "An account with this email already exists.",
+                "error"
+            )
+
+            return render_template(
+                "register.html"
+            )
+
+
+        user = User(
+            name=name,
+            email=email,
+
+            # Temporary until public email
+            # verification is configured.
+            is_verified=True
+        )
+
+
+        user.set_password(
+            password
+        )
+
+
+        try:
+
+            db.session.add(user)
+
+            db.session.commit()
+
+
+        except Exception as e:
+
+            db.session.rollback()
+
+            print(
+                "Registration error:",
+                e
+            )
+
+            flash(
+                "Unable to create account.",
+                "error"
+            )
+
+            return render_template(
+                "register.html"
+            )
+
+
+        login_user(
+            user,
+            remember=True
+        )
+
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+
+    return render_template(
+        "register.html"
+    )
+
+    # ==========================================
+    # POST - CREATE ACCOUNT
+    # ==========================================
+
+    if request.method == "POST":
+
+        name = (
+            request.form
+            .get("name", "")
+            .strip()
+        )
+
+        email = (
+            request.form
+            .get("email", "")
+            .strip()
+            .lower()
+        )
+
+        password = request.form.get(
+            "password",
+            ""
+        )
+
+        confirm_password = request.form.get(
+            "confirm_password",
+            ""
+        )
+
+
+        # --------------------------------------
+        # REQUIRED FIELDS
+        # --------------------------------------
+
+        if (
+            not name
+            or not email
+            or not password
+            or not confirm_password
+        ):
 
             flash(
                 "Please fill in all fields.",
@@ -170,6 +519,10 @@ def register():
                 "register.html"
             )
 
+
+        # --------------------------------------
+        # NAME VALIDATION
+        # --------------------------------------
 
         if len(name) > 100:
 
@@ -182,6 +535,29 @@ def register():
                 "register.html"
             )
 
+
+        # --------------------------------------
+        # EMAIL BASIC VALIDATION
+        # --------------------------------------
+
+        if (
+            "@" not in email
+            or "." not in email.split("@")[-1]
+        ):
+
+            flash(
+                "Please enter a valid email address.",
+                "error"
+            )
+
+            return render_template(
+                "register.html"
+            )
+
+
+        # --------------------------------------
+        # PASSWORD VALIDATION
+        # --------------------------------------
 
         if len(password) < 8:
 
@@ -207,6 +583,10 @@ def register():
             )
 
 
+        # --------------------------------------
+        # EXISTING ACCOUNT
+        # --------------------------------------
+
         existing_user = (
             User.query
             .filter_by(
@@ -228,32 +608,101 @@ def register():
             )
 
 
+        # ======================================
+        # CREATE USER
+        # ======================================
+
         user = User(
             name=name,
-            email=email
+            email=email,
+            is_verified=False
         )
+
 
         user.set_password(
             password
         )
 
 
-        db.session.add(
-            user
-        )
+        try:
 
-        db.session.commit()
+            db.session.add(
+                user
+            )
+
+            db.session.commit()
 
 
-        login_user(
-            user
+        except Exception as e:
+
+            db.session.rollback()
+
+            print(
+                "User registration database error:",
+                e
+            )
+
+            flash(
+                "Unable to create account. "
+                "Please try again.",
+                "error"
+            )
+
+            return render_template(
+                "register.html"
+            )
+
+
+        # ======================================
+        # SEND VERIFICATION EMAIL
+        # ======================================
+
+        try:
+
+            send_verification_email(
+                user.email,
+                user.name
+            )
+
+
+        except Exception as e:
+
+            print(
+                "Verification email error:",
+                e
+            )
+
+            flash(
+                "Your account was created, but the "
+                "verification email could not be sent.",
+                "error"
+            )
+
+            return redirect(
+                url_for("login")
+            )
+
+
+        # ======================================
+        # SUCCESS
+        # ======================================
+
+        flash(
+            "Account created successfully. "
+            "Check your email and verify your "
+            "account before signing in.",
+            "success"
         )
 
 
         return redirect(
-            url_for("home")
+            url_for("login")
         )
 
+
+    # ==========================================
+    # GET - DISPLAY REGISTER PAGE
+    # ==========================================
 
     return render_template(
         "register.html"
@@ -335,6 +784,15 @@ def login():
             return render_template(
                 "login.html"
             )
+        if not user.is_verified:
+
+            flash("Please verify your email before signing in.",
+                 "error")
+            
+            return render_template(
+                "login.html"
+    )
+        
 
         login_user(
             user,
@@ -554,6 +1012,76 @@ def check():
     else:
         result["scan_id"] = None    
 
+@app.route(
+    "/verify-email/<token>"
+)
+def verify_email(token):
+
+    email = verify_token(
+        token
+    )
+
+
+    if not email:
+
+        flash(
+            "Verification link is invalid or has expired.",
+            "error"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+
+    user = (
+        User.query
+        .filter_by(
+            email=email
+        )
+        .first()
+    )
+
+
+    if not user:
+
+        flash(
+            "Account not found.",
+            "error"
+        )
+
+        return redirect(
+            url_for("register")
+        )
+
+
+    if user.is_verified:
+
+        flash(
+            "Your email is already verified.",
+            "info"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+
+    user.is_verified = True
+
+    db.session.commit()
+
+
+    flash(
+        "Email verified successfully. "
+        "You can now sign in.",
+        "success"
+    )
+
+
+    return redirect(
+        url_for("login")
+    )
     # ==========================================
 # SAVE SCAN FOR LOGGED-IN USER
 # ==========================================

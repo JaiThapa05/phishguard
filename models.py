@@ -36,6 +36,12 @@ class User(UserMixin, db.Model):
         db.String(255),
         nullable=False
     )
+    google_id = db.Column(
+        db.String(255),
+        unique=True,
+        nullable=True,
+        index=True
+)
     # Email verified hai ya nahi
     is_verified = db.Column(
         db.Boolean,

@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -10,12 +9,21 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
-        Create Account — PhishGuard
-    </title>
+    <title>Create Account — PhishGuard</title>
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet"
     >
 
@@ -23,36 +31,48 @@
         rel="stylesheet"
         href="{{ url_for('static', filename='style.css') }}"
     >
-
 </head>
 
 
-<body class="auth-body">
+<body class="premium-auth-body">
 
-    <a
+
+<!-- BACK -->
+
+<a
     href="{{ url_for('home') }}"
-    class="auth-back-button"
+    class="premium-auth-back"
 >
     <svg viewBox="0 0 24 24">
-        <path d="M19 12H5"/>
-        <path d="M10 17L5 12L10 7"/>
+        <path d="M15 18L9 12L15 6"/>
     </svg>
 
-    <span>
-        Back 
-    </span>
+    Home
 </a>
 
 
-<div class="auth-page">
+<!-- BACKGROUND ART -->
+
+<div class="auth-art auth-art-top"></div>
+<div class="auth-art auth-art-bottom"></div>
+
+<div class="auth-orb auth-orb-one"></div>
+<div class="auth-orb auth-orb-two"></div>
 
 
-    <a
-        href="/"
-        class="auth-logo"
-    >
+<!-- AUTH -->
 
-        <div class="logo-icon">
+<main class="premium-auth-page">
+
+    <section class="premium-auth-container">
+
+
+        <!-- BRAND ICON -->
+
+        <a
+            href="{{ url_for('home') }}"
+            class="premium-auth-logo"
+        >
 
             <svg viewBox="0 0 24 24">
 
@@ -60,35 +80,35 @@
                     d="M12 3L5.5 5.7V10.8C5.5 15.2 8.2 19.1 12 20.6C15.8 19.1 18.5 15.2 18.5 10.8V5.7L12 3Z"
                 />
 
+                <path
+                    d="M9 12L11 14L15.5 9.5"
+                />
+
             </svg>
 
-        </div>
-
-        PhishGuard
-
-    </a>
+        </a>
 
 
-    <div class="auth-card">
+        <!-- TITLE -->
 
-
-        <div class="auth-heading">
-
-            <div class="auth-shield">
-                +
-            </div>
+        <div class="premium-auth-heading">
 
             <h1>
-                Create your account
+                Create your PhishGuard account
             </h1>
 
             <p>
-                Save security reports and track your
-                previous URL scans.
+                Already have an account?
+
+                <a href="{{ url_for('login') }}">
+                    Log in.
+                </a>
             </p>
 
         </div>
 
+
+        <!-- FLASH -->
 
         {% with messages =
             get_flashed_messages(
@@ -98,7 +118,9 @@
 
             {% for category, message in messages %}
 
-                <div class="auth-alert {{ category }}">
+                <div
+                    class="premium-alert {{ category }}"
+                >
                     {{ message }}
                 </div>
 
@@ -107,110 +129,280 @@
         {% endwith %}
 
 
+        <!-- GOOGLE -->
+
+        <a
+            href="{{ url_for('google_login') }}"
+            class="premium-google-button"
+        >
+
+            <svg viewBox="0 0 24 24">
+
+                <path
+                    fill="#4285F4"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+
+                <path
+                    fill="#34A853"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+
+                <path
+                    fill="#FBBC05"
+                    d="M5.84 14.1A6.7 6.7 0 015.49 12c0-.74.13-1.44.35-2.1V7.06H2.18A11 11 0 001 12c0 1.77.43 3.45 1.18 4.94l3.66-2.84z"
+                />
+
+                <path
+                    fill="#EA4335"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06L5.84 9.9c.87-2.6 3.3-4.52 6.16-4.52z"
+                />
+
+            </svg>
+
+            Continue with Google
+
+        </a>
+
+
+        <!-- DIVIDER -->
+
+        <div class="premium-divider">
+
+            <span></span>
+
+            <p>or</p>
+
+            <span></span>
+
+        </div>
+
+
+        <!-- FORM -->
+
         <form
             method="POST"
-            class="auth-form"
+            class="premium-auth-form"
         >
 
 
-            <div class="form-group">
+            <!-- NAME -->
 
-                <label>
+            <div class="premium-field">
+
+                <label for="name">
                     Name
                 </label>
 
                 <input
+                    id="name"
                     type="text"
                     name="name"
                     placeholder="Your name"
-                    required
                     maxlength="100"
                     autocomplete="name"
+                    required
                 >
 
             </div>
 
 
-            <div class="form-group">
+            <!-- EMAIL -->
 
-                <label>
-                    Email address
+            <div class="premium-field">
+
+                <label for="email">
+                    Email
                 </label>
 
                 <input
+                    id="email"
                     type="email"
                     name="email"
                     placeholder="you@example.com"
-                    required
                     autocomplete="email"
+                    required
                 >
 
             </div>
 
 
-            <div class="form-group">
+            <!-- PASSWORD -->
 
-                <label>
+            <div class="premium-field">
+
+                <label for="registerPassword">
                     Password
                 </label>
 
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Minimum 8 characters"
-                    minlength="8"
-                    required
-                    autocomplete="new-password"
-                >
+
+                <div class="premium-password">
+
+                    <input
+                        id="registerPassword"
+                        type="password"
+                        name="password"
+                        placeholder="Minimum 8 characters"
+                        minlength="8"
+                        autocomplete="new-password"
+                        required
+                    >
+
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-target="registerPassword"
+                        aria-label="Show password"
+                    >
+
+                        <svg viewBox="0 0 24 24">
+
+                            <path
+                                d="M2.5 12C4.5 8.5 7.7 6.5 12 6.5C16.3 6.5 19.5 8.5 21.5 12C19.5 15.5 16.3 17.5 12 17.5C7.7 17.5 4.5 15.5 2.5 12Z"
+                            />
+
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="2.5"
+                            />
+
+                        </svg>
+
+                    </button>
+
+                </div>
 
             </div>
 
 
-            <div class="form-group">
+            <!-- CONFIRM PASSWORD -->
 
-                <label>
+            <div class="premium-field">
+
+                <label for="confirmPassword">
                     Confirm password
                 </label>
 
-                <input
-                    type="password"
-                    name="confirm_password"
-                    placeholder="Enter password again"
-                    minlength="8"
-                    required
-                    autocomplete="new-password"
-                >
+
+                <div class="premium-password">
+
+                    <input
+                        id="confirmPassword"
+                        type="password"
+                        name="confirm_password"
+                        placeholder="Enter password again"
+                        minlength="8"
+                        autocomplete="new-password"
+                        required
+                    >
+
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-target="confirmPassword"
+                        aria-label="Show password"
+                    >
+
+                        <svg viewBox="0 0 24 24">
+
+                            <path
+                                d="M2.5 12C4.5 8.5 7.7 6.5 12 6.5C16.3 6.5 19.5 8.5 21.5 12C19.5 15.5 16.3 17.5 12 17.5C7.7 17.5 4.5 15.5 2.5 12Z"
+                            />
+
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="2.5"
+                            />
+
+                        </svg>
+
+                    </button>
+
+                </div>
 
             </div>
 
 
+            <!-- SUBMIT -->
+
             <button
                 type="submit"
-                class="auth-button"
+                class="premium-submit"
             >
-                Create Account
-                <span>→</span>
+                Create account
             </button>
 
 
         </form>
 
 
-        <div class="auth-footer">
+        <!-- TERMS -->
 
-            Already have an account?
+        <p class="premium-terms">
 
-            <a href="/login">
-                Sign in
-            </a>
+            By signing up, you agree to use
+            PhishGuard responsibly and acknowledge
+            that automated security results are not
+            a guarantee of website safety.
 
-        </div>
-
-
-    </div>
+        </p>
 
 
-</div>
+    </section>
+
+</main>
+
+
+<script>
+
+document
+.querySelectorAll(".password-toggle")
+.forEach(function (button) {
+
+    button.addEventListener(
+        "click",
+        function () {
+
+            const input =
+                document.getElementById(
+                    this.dataset.target
+                );
+
+            if (!input) {
+                return;
+            }
+
+            const hidden =
+                input.type === "password";
+
+            input.type =
+                hidden
+                ? "text"
+                : "password";
+
+            this.classList.toggle(
+                "active",
+                hidden
+            );
+
+            this.setAttribute(
+                "aria-label",
+                hidden
+                    ? "Hide password"
+                    : "Show password"
+            );
+
+        }
+    );
+
+});
+
+</script>
+
 
 </body>
 
